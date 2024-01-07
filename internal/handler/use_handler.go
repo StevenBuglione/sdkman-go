@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os/exec"
+	"sdkman-go/internal/exitcode"
 	"sdkman-go/internal/mock"
 )
 
@@ -15,20 +16,18 @@ func UseHandler() *Handler {
 			newJavaHome, err := setJavaPath(javaInstallPath)
 			if err != nil {
 				fmt.Println("Error setting Java path:", err)
-				return errors.New("FAIL:1") // return custom exit code and error message
+				return errors.New(exitcode.IsSuccess())
 			}
 			if shouldRefresh() {
-				return errors.New("SUCCESS_REFRESH:100") // return custom exit code and error message
+				return errors.New(exitcode.IsSuccessRefresh())
 			}
 			cmd.Println(newJavaHome)
-			return errors.New("SUCCESS:0") // return success exit code and message
+			return errors.New(exitcode.IsFailure())
 		},
 	}
 }
 
-// Placeholder for your actual refresh logic.
 func shouldRefresh() bool {
-	// Implement your refresh logic here.
 	return true
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os/exec"
+	"sdkman-go/internal/exitcode"
 	"strings"
 )
 
@@ -13,16 +14,16 @@ func CurrentHandler() *Handler {
 		ExecuteFunc: func(cmd *cobra.Command, args []string) error {
 			javaVersionDetail := GetJavaVersionDetail()
 			if javaVersionDetail == "" {
-				return errors.New("FAIL:1") // No Java version detail retrieved
+				return errors.New(exitcode.IsFailure()) // No Java version detail retrieved
 			}
 
 			cmd.Println(javaVersionDetail)
 
 			if shouldRefresh() {
-				return errors.New("SUCCESS_REFRESH:100") // Get Java version detail success and refresh needed
+				return errors.New(exitcode.IsSuccessRefresh()) // Get Java version detail success and refresh needed
 			}
 
-			return errors.New("SUCCESS:0") // Get Java version detail success
+			return errors.New(exitcode.IsSuccess()) // Get Java version detail success
 		},
 	}
 }

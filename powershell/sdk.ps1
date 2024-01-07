@@ -6,10 +6,13 @@ param(
 
 $exePath = Join-Path -Path $PSScriptRoot -ChildPath "sdk.exe"
 
-# Run the executable with all arguments
 & $exePath $commands
+$exitCode = $LASTEXITCODE
 
-Update-SessionEnvironment
+# Only Update If Exit Code is 100, 100 = SuccessRefresh Powershell Session Environment
+if ($exitCode -eq 100) {
+    Update-SessionEnvironment
+}
 
 
 function Get-EnvironmentVariableNames([System.EnvironmentVariableTarget] $Scope) {
