@@ -1,13 +1,13 @@
-param (
-    [Parameter(Position = 0, Mandatory = $false)]
-    [String]$command,
-
-    [Parameter(Position = 1, Mandatory = $false)]
-    [String]$arg1
+param(
+    [Parameter(Position = 0,
+            ValueFromRemainingArguments = $true)]
+    [String[]]$commands
 )
 
 $exePath = Join-Path -Path $PSScriptRoot -ChildPath "sdk.exe"
-& $exePath $command $arg1
+
+# Run the executable with all arguments
+& $exePath $commands
 
 Update-SessionEnvironment
 
