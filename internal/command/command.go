@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 	"sdkman-go/internal/exitcode"
@@ -24,20 +23,9 @@ func (b *BaseCommand) Init(use, short, long string, h *handler.Handler) {
 		Long:  long,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := h.Execute(cmd, args)
-			// Handle error and capture exit code
 			if err != nil {
 				errParts := err.Error()
 				exitCode := exitcode.ParseExitCode(errParts)
-
-				// Use exit codes as per the operation result
-				switch exitCode {
-				case 100: // Success refresh code
-					fmt.Println(exitCode) // Print the message
-					// Call your refresh function here
-				default:
-					fmt.Println(exitCode) // Print the message
-				}
-				fmt.Println(exitCode) // Print the message
 				os.Exit(exitCode)
 			}
 			return nil

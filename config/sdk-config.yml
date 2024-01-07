@@ -1,0 +1,8 @@
+SDK_CONFIG:
+  SDKMAN_SERVICE: "https://api.sdkman.io/2"
+  SDKMAN_VERSION: "1.0.0"
+  SDKMAN_DIR: "$HOME\\.sdkman"
+
+
+DEV_CONFIG:
+  DEBUG: "false"

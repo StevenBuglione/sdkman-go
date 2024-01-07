@@ -19,11 +19,10 @@ func main() {
 
 		if convErr != nil {
 			fmt.Fprintf(os.Stderr, "Unable to parse exit code: %v", err)
-			// Default fail code in case of conversion error
 			os.Exit(1)
 		}
 
-		fmt.Println(splitErr[0]) // Print the status message
+		fmt.Println(splitErr[0])
 
 		os.Exit(exitCode)
 	}
