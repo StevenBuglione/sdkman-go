@@ -6,13 +6,25 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"sdkman-go/internal/registry"
+	"strconv"
+	"strings"
 )
 
 func main() {
 	var rootCmd = &cobra.Command{Use: "sdk"}
 	registry.RegisterCommands(rootCmd)
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		splitErr := strings.Split(err.Error(), ":")
+		exitCode, convErr := strconv.Atoi(splitErr[1])
+
+		if convErr != nil {
+			fmt.Fprintf(os.Stderr, "Unable to parse exit code: %v", err)
+			// Default fail code in case of conversion error
+			os.Exit(1)
+		}
+
+		fmt.Println(splitErr[0]) // Print the status message
+
+		os.Exit(exitCode)
 	}
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os/exec"
@@ -9,12 +10,26 @@ import (
 
 func UseHandler() *Handler {
 	return &Handler{
-		ExecuteFunc: func(cmd *cobra.Command, args []string) {
+		ExecuteFunc: func(cmd *cobra.Command, args []string) error {
 			javaInstallPath := returnJavaPath(args)
-			newJavaHome, _ := setJavaPath(javaInstallPath)
+			newJavaHome, err := setJavaPath(javaInstallPath)
+			if err != nil {
+				fmt.Println("Error setting Java path:", err)
+				return errors.New("FAIL:1") // return custom exit code and error message
+			}
+			if shouldRefresh() {
+				return errors.New("SUCCESS_REFRESH:100") // return custom exit code and error message
+			}
 			cmd.Println(newJavaHome)
+			return errors.New("SUCCESS:0") // return success exit code and message
 		},
 	}
+}
+
+// Placeholder for your actual refresh logic.
+func shouldRefresh() bool {
+	// Implement your refresh logic here.
+	return true
 }
 
 func returnJavaPath(args []string) string {
