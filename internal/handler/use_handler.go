@@ -8,12 +8,12 @@ import (
 )
 
 type UseHandler struct {
-	PowershellService service.IPowershellService
+	UseHandlerService service.IUseHandlerService
 }
 
 func NewUseHandler() IHandler {
 	uh := &UseHandler{
-		PowershellService: service.NewPowershellService(),
+		UseHandlerService: service.NewUseHandlerService(),
 	}
 	// Check interface implementation
 	var _ IHandler = uh
@@ -21,7 +21,7 @@ func NewUseHandler() IHandler {
 }
 
 func (h *UseHandler) Execute(cmd *cobra.Command, args []string) exitcode.ExitCode {
-	err := h.PowershellService.ExecuteJavaPathUpdate(args)
+	err := h.UseHandlerService.Use(args)
 	if err != nil {
 		fmt.Println("Error setting Java path:", err)
 		return exitcode.Failure
