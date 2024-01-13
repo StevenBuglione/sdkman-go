@@ -3,36 +3,32 @@ package command
 import (
 	"github.com/spf13/cobra"
 	"os"
-	"sdkman-go/internal/exitcode"
 	"sdkman-go/internal/handler"
 )
 
-type Command interface {
-	Init(use, short, long string, handler *handler.Handler)
+type ICommand interface {
+	Init(use, short, long string, handler handler.IHandler)
 	Register(*cobra.Command)
 }
 
-type BaseCommand struct {
+type Command struct {
 	Cmd *cobra.Command
 }
 
-func (b *BaseCommand) Init(use, short, long string, h *handler.Handler) {
+func (b *Command) Init(use, short, long string, h handler.IHandler) {
 	b.Cmd = &cobra.Command{
 		Use:   use,
 		Short: short,
 		Long:  long,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := h.Execute(cmd, args)
-			if err != nil {
-				errParts := err.Error()
-				exitCode := exitcode.ParseExitCode(errParts)
-				os.Exit(exitCode)
-			}
+			resp := h.Execute(cmd, args)
+			exitCode := h.Refresh(resp)
+			os.Exit(exitCode.Value())
 			return nil
 		},
 	}
 }
 
-func (b *BaseCommand) Register(rootCmd *cobra.Command) {
+func (b *Command) Register(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(b.Cmd)
 }

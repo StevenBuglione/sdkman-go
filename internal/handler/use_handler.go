@@ -1,51 +1,37 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os/exec"
 	"sdkman-go/internal/exitcode"
-	"sdkman-go/internal/mock"
+	"sdkman-go/internal/service"
 )
 
-func UseHandler() *Handler {
-	return &Handler{
-		ExecuteFunc: func(cmd *cobra.Command, args []string) error {
-			javaInstallPath := returnJavaPath(args)
-			newJavaHome, err := setJavaPath(javaInstallPath)
-			if err != nil {
-				fmt.Println("Error setting Java path:", err)
-				return errors.New(exitcode.IsSuccess())
-			}
-			if shouldRefresh() {
-				return errors.New(exitcode.IsSuccessRefresh())
-			}
-			cmd.Println(newJavaHome)
-			return errors.New(exitcode.IsFailure())
-		},
-	}
+type UseHandler struct {
+	PowershellService service.IPowershellService
 }
 
-func shouldRefresh() bool {
-	return true
+func NewUseHandler() IHandler {
+	uh := &UseHandler{
+		PowershellService: service.NewPowershellService(),
+	}
+	// Check interface implementation
+	var _ IHandler = uh
+	return uh
 }
 
-func returnJavaPath(args []string) string {
-	javaRegistry := mock.NewJavaRegistry()
-	for _, arg := range args {
-		if _, ok := javaRegistry.Registry[arg]; ok {
-			return javaRegistry.Registry[arg]
-		}
+func (h *UseHandler) Execute(cmd *cobra.Command, args []string) exitcode.ExitCode {
+	err := h.PowershellService.ExecuteJavaPathUpdate(args)
+	if err != nil {
+		fmt.Println("Error setting Java path:", err)
+		return exitcode.Failure
 	}
-	return "Java Version Not Found Or Installed"
+	return exitcode.Success
 }
 
-func setJavaPath(javaInstallPath string) (string, error) {
-	psCommand := fmt.Sprintf("[System.Environment]::SetEnvironmentVariable('JAVA_HOME', \"%s\", 'User')", javaInstallPath)
-	cmd := exec.Command("powershell", "-Command", psCommand)
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("failed to execute command: %w", err)
+func (h *UseHandler) Refresh(exitCode exitcode.ExitCode) exitcode.ExitCode {
+	if exitCode == exitcode.Success {
+		return exitcode.SuccessRefresh
 	}
-	return "JAVA_HOME: " + javaInstallPath, nil
+	return exitcode.Failure
 }

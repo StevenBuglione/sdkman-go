@@ -5,10 +5,10 @@ import (
 	"sdkman-go/internal/command"
 )
 
-var CommandRegistry = []command.Command{
-	command.NewInstallCommand(),
-	command.NewCurrentCommand(),
-	command.NewListCommand(),
+var CommandRegistry = []command.ICommand{
+	//command.NewInstallCommand(),
+	//command.NewCurrentCommand(),
+	//command.NewListCommand(),
 	command.NewUseCommand(),
 }
 

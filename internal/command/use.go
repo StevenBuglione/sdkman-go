@@ -3,13 +3,13 @@ package command
 import "sdkman-go/internal/handler"
 
 type UseCommand struct {
-	*BaseCommand
+	*Command
 }
 
-func NewUseCommand() *UseCommand {
-	c := &UseCommand{BaseCommand: &BaseCommand{}}
-	h := handler.UseHandler()
-	c.BaseCommand.Init(
+func NewUseCommand() ICommand {
+	c := &UseCommand{Command: &Command{}}
+	h := handler.NewUseHandler()
+	c.Command.Init(
 		"use",
 		"Use Command",
 		"This is the Use Command",
